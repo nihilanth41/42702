@@ -1,0 +1,2 @@
+addiu $a0,$zero,0
+bne $a1,$a2,-8
