@@ -11,9 +11,9 @@
 char *OP_STRINGS[] = { "addiu", "bne", "syscall" };
 uint32_t OPCODES[] = { 0x24000000, 0x14000000, 0x0 };
 
-char *REG_STRINGS[] = { "$zero", "$at" "$v0", "$v1", "$a0", "$a1", "$a2", "$a3" };
-uint32_t REGCODES[] = { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5,0x6, 0x7 };
-			// 0 	  1     2      3 
+char *REG_STRINGS[] = { "$zero", "$at", "$v0", "$v1", "$a0", "$a1", "$a2", "$a3" };
+uint32_t REGCODES[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+			           // 0   1     2    3 
 
 
 int main(int argc, char **argv) {
@@ -37,11 +37,21 @@ int main(int argc, char **argv) {
 	while( fgets(buf, BUF_SIZE, fp_r) != NULL ) {
 		char *op, *rs, *rt, *immediate;
 		// Token on space between instruction and operands
+//        if (strcmp(buf, OP_STRINGS[2]) == 0 ){
+//            op = 0x0;
+//            printf("%s", op);
+//        }
+//        else{
 		op = strtok(buf, " ");
-		rs = strtok(NULL, ",");
 		rt = strtok(NULL, ",");
+		rs = strtok(NULL, ",");
 		immediate = strtok(NULL, "\n");
-		printf("%s %s,%s,%s", op, rs, rt, immediate);
+        if (strcmp(op, OP_STRINGS[2]) == 0){
+            printf("syscall\n");
+            break;
+        }
+        else
+		  printf("%s %s,%s,%s\n", op, rs, rt, immediate);
 		
 		uint32_t opc, op1, op2, op3;
 
@@ -55,26 +65,27 @@ int main(int argc, char **argv) {
 		}
 		for(i=0; i<NUM_REGS; i++) { 
 			if(0 == strcmp(rs, REG_STRINGS[i])) {
-				op1 = ( (uint32_t)REGCODES[i] ) << 21;
+				op1 = ((REGCODES[i] ) << 21) & 0xffe00000;
 				printf("%x\n", op1);
 				break;
 			}
 		}
 		for(i=0; i<NUM_REGS; i++) { 
 			if(0 == strcmp(rt, REG_STRINGS[i])) {
-				op2 = ( (uint32_t)REGCODES[i] ) << 16;
-				//printf("%x\n", op2);
+				op2 = ((REGCODES[i] ) << 16) & 0xffff0000;
+				printf("%x\n", op2);
 				break;
 			}
 		}
 		// replace trailing \n with nul terminator
 		//immediate[strlen(immediate)-1] = '\0';
-		uint32_t immediate_int = (uint32_t)strtol(immediate, NULL, 10);
+		uint32_t immediate_int = (uint32_t)strtol(immediate, NULL, 16);
 		
-		//printf("Immediate: %d\n", immediate_int);
+		printf("Immediate: %d\n", immediate_int);
 		uint32_t machine_code = opc+op1+op2+immediate_int;
 		printf("machine code: %x\n", machine_code);
-	}
+//        }
+    }
 
 	return EXIT_SUCCESS;
 	
