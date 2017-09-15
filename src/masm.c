@@ -43,17 +43,25 @@ int main(int argc, char **argv) {
 //        }
 //        else{
 		op = strtok(buf, " ");
-		rt = strtok(NULL, ",");
-		rs = strtok(NULL, ",");
+        if (strcmp(op, OP_STRINGS[0]) == 0){
+            rt = strtok(NULL, ",");
+            rs = strtok(NULL, ",");
+        }
+        if (strcmp(op, OP_STRINGS[1]) == 0){
+            rs = strtok(NULL, ",");
+            rt = strtok(NULL, ",");
+        }
+//		rt = strtok(NULL, ",");
+//		rs = strtok(NULL, ",");
 		immediate = strtok(NULL, "\n");
         if (strcmp(op, OP_STRINGS[2]) == 0){
-            printf("syscall\n");
+            printf("syscall 0000000c\n");
             break;
         }
         else
 		  printf("%s %s,%s,%s\n", op, rs, rt, immediate);
 		
-		uint32_t opc, op1, op2, op3;
+		uint32_t opc, op1, op2;
 
 		int i;
 		for(i=0; i<NUM_OPS; i++) {
@@ -79,11 +87,17 @@ int main(int argc, char **argv) {
 		}
 		// replace trailing \n with nul terminator
 		//immediate[strlen(immediate)-1] = '\0';
-		uint32_t immediate_int = (uint32_t)strtol(immediate, NULL, 16);
+		uint16_t immediate_int = (uint16_t)strtol(immediate, NULL, 16);
 		
 		printf("Immediate: %d\n", immediate_int);
+        if (0 == strcmp(OP_STRINGS[1], op)){
+        uint32_t machine_code = opc+op1+op2+((immediate_int >> 2) | 0xf000);
+		printf("machine code: %x\n", machine_code);
+        }
+        else{
 		uint32_t machine_code = opc+op1+op2+immediate_int;
 		printf("machine code: %x\n", machine_code);
+        }
 //        }
     }
 
