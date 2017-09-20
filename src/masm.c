@@ -35,35 +35,30 @@ int main(int argc, char **argv) {
 	
 	// For each line of input assembly
 	while( fgets(buf, BUF_SIZE, fp_r) != NULL ) {
-		char *op, *rs, *rt, *immediate;
-		// Token on space between instruction and operands
-//        if (strcmp(buf, OP_STRINGS[2]) == 0 ){
-//            op = 0x0;
-//            printf("%s", op);
-//        }
-//        else{
+		char *op=NULL, *rs=NULL, *rt=NULL, *immediate=NULL;
 		op = strtok(buf, " ");
-        if (strcmp(op, OP_STRINGS[0]) == 0){
-            rt = strtok(NULL, ",");
-            rs = strtok(NULL, ",");
-        }
-        if (strcmp(op, OP_STRINGS[1]) == 0){
-            rs = strtok(NULL, ",");
-            rt = strtok(NULL, ",");
-        }
-//		rt = strtok(NULL, ",");
-//		rs = strtok(NULL, ",");
-		immediate = strtok(NULL, "\n");
-        if (strcmp(op, OP_STRINGS[2]) == 0){
-            printf("syscall 0000000c\n");
-            break;
-        }
-        else
-		  printf("%s %s,%s,%s\n", op, rs, rt, immediate);
-		
-		uint32_t opc, op1, op2;
 
-		int i;
+		if (strcmp(op, OP_STRINGS[0]) == 0){
+		rt = strtok(NULL, ",");
+		rs = strtok(NULL, ",");
+		}
+		if (strcmp(op, OP_STRINGS[1]) == 0){
+		rs = strtok(NULL, ",");
+		rt = strtok(NULL, ",");
+		}
+		immediate = strtok(NULL, "\n");
+	
+		// TODO
+		if (strcmp(op, OP_STRINGS[2]) == 0){
+			printf("syscall 0000000c\n");
+			break;
+		}
+
+		printf("%s %s,%s,%s\n", op, rs, rt, immediate);
+		
+		uint32_t opc=0, op1=0, op2=0;
+		int i=0;
+
 		for(i=0; i<NUM_OPS; i++) {
 			if(0 == strcmp(OP_STRINGS[i], op)) {
 				opc = OPCODES[i];
@@ -90,17 +85,15 @@ int main(int argc, char **argv) {
 		uint16_t immediate_int = (uint16_t)strtol(immediate, NULL, 16);
 		
 		printf("Immediate: %d\n", immediate_int);
-        if (0 == strcmp(OP_STRINGS[1], op)){
-        uint32_t machine_code = opc+op1+op2+((immediate_int >> 2) | 0xf000);
-		printf("machine code: %x\n", machine_code);
-        }
-        else{
-		uint32_t machine_code = opc+op1+op2+immediate_int;
-		printf("machine code: %x\n", machine_code);
-        }
-//        }
-    }
+		if (0 == strcmp(OP_STRINGS[1], op)){
+		uint32_t machine_code = opc+op1+op2+((immediate_int >> 2) | 0xf000);
+			printf("machine code: %x\n", machine_code);
+		}
+		else{
+			uint32_t machine_code = opc+op1+op2+immediate_int;
+			printf("machine code: %x\n", machine_code);
+		}
+	}
 
 	return EXIT_SUCCESS;
-	
 }
