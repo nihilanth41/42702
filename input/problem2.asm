@@ -38,11 +38,13 @@ slt $s1,$s2,$s3		// $s1 = (a[i] < a[iMin]) ? 1 : 0
 beq $s1,$zero,8		// skip next if $s1==0 
 add $t8,$zero,$t2	// (true) => iMin = i
 slt $s1,$t2,$t0		// $s1 = (i<n) ? 1 : 0 
-blez 12			// skip next two if false
+blz $s1,12		// skip next two if false
 addiu $t2,$zero,1	// i = i+1
 j -48			// jump to TOP_INNER 	
-			// else check iMin != j
-			// swap if true
+beq $t8,$t3,16		// skip next three lines if (iMin == j), else swap a[j] and a[iMin]
+lw $s4,0($t7)		// $s4 = a[j]_tmp
+sw $s3,0($t7)		// a[j] = a[iMin]
+sw $s4,0($s0)		// a[iMin] = a[j]_tmp
 			// check if j<n-1	
 			// increment j
 
