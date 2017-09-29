@@ -20,11 +20,10 @@ addiu $t0,$zero,2
 sw $t0,32($a0)
 addiu $t0,$zero,a
 sw $t0,36($a0)
-
 addiu $t0,$zero,0xA 	// n = 10
 addiu $t1,$zero,0x09 	// n-1 = 9
 addiu $t3,$zero,0	// j = 0
-sll $t6,$t3,2		// $t6 = j*4
+sll $t6,$t3,2		// $t6 = j*4		// TOP_OUTER:
 add $t7,$a0,$t6		// $t7 = &a[j]
 add $t8,$zero,$t3	// iMin = j
 addiu $t2,$t3,1		// i = j+1		
@@ -38,24 +37,15 @@ slt $s1,$s2,$s3		// $s1 = (a[i] < a[iMin]) ? 1 : 0
 beq $s1,$zero,8		// skip next if $s1==0 
 add $t8,$zero,$t2	// (true) => iMin = i
 slt $s1,$t2,$t0		// $s1 = (i<n) ? 1 : 0 
-blz $s1,12		// skip next two if false
+bez $s1,12		// skip next two if false
 addiu $t2,$zero,1	// i = i+1
 j -48			// jump to TOP_INNER 	
 beq $t8,$t3,16		// skip next three lines if (iMin == j), else swap a[j] and a[iMin]
 lw $s4,0($t7)		// $s4 = a[j]_tmp
 sw $s3,0($t7)		// a[j] = a[iMin]
 sw $s4,0($s0)		// a[iMin] = a[j]_tmp
-			// check if j<n-1	
-			// increment j
-
-
-
-
-
-
-
-
-
-
-
-
+slt $s1,$t3,$t1		// $s1 = (j < n-1) ? 1 : 0
+beq $s1,$zero,12	// skip next two lines if j>=n-1
+addiu $t3,$zero,1	// (else) j++
+j -96			// jump to TOP_OUTER	relative(-24*4)
+syscall
