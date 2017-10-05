@@ -1,0 +1,12 @@
+addiu $t4,$zero,A			
+addiu $t3,$zero,0
+addiu $t0,$zero,0
+addiu $t1,$zero,1
+addiu $t2,$zero,0
+beq $t3,$t4,18
+addiu $t0,$t1,0				
+addiu $t1,$t2,0
+add $t2,$t0,$t1
+addiu $t3,$t3,1
+bne $t3,$t4,-10
+syscall
